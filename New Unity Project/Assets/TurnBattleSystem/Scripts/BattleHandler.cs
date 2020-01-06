@@ -81,10 +81,14 @@ public class BattleHandler : MonoBehaviour {
         if (state == State.WaitingForPlayer) {
             if (Input.GetKeyDown(KeyCode.Space)) {
                 state = State.Busy;
-                //activeCharacterBattle.Attack(enemyCharacterBattle[Random.Range(0,3)], () => {
-                //    ChooseNextActiveCharacter();
-                //});
                 activeCharacterBattle.PurifyingStrike(enemyCharacterBattle, () => {
+                    ChooseNextActiveCharacter();
+                });
+            }
+            else if (Input.GetKeyDown(KeyCode.G))
+            {
+                state = State.Busy;
+                activeCharacterBattle.Delirium(() => {
                     ChooseNextActiveCharacter();
                 });
             }

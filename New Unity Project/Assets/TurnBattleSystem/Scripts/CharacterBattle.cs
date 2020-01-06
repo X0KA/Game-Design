@@ -153,7 +153,14 @@ public class CharacterBattle : MonoBehaviour {
             animator.Play("SlashMelee1H");
             //int damageAmount = UnityEngine.Random.Range(20, 50);
             int damageAmount = CharStats.Damage;
-            targetCharacterBattle.Damage(this, damageAmount);
+
+            if (!CharStats.Blinded)
+                targetCharacterBattle.Damage(this, damageAmount);
+            else
+            {
+                if (--CharStats.BlindDuration < 1)
+                    CharStats.Blinded = false;
+            }
 
             SlideToPosition(startingPosition, () => {
                 // Slide back completed, back to idle
@@ -195,15 +202,32 @@ public class CharacterBattle : MonoBehaviour {
             });
         });
     }
-    public void Delirium(Action onComplete)
+    public void Delirium(Action onAttackComplete)
     {
         CharStats.Damage += 10;
-        CharStats.Speed += 5;
+        CharStats.Speed += 50;
+        onAttackComplete();
     }
 
     public void HollyWater(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
         targetCharacterBattle.CharStats.Health += 40;
+        onAttackComplete();
+    }
+
+    public void BlindingDart(CharacterBattle target, Action onAttackComplete)
+    {
+        int blindDuration = 0;
+
+        if (CharStats.Level < 9)
+            blindDuration = 2;
+        else if (CharStats.Level < 10)
+            blindDuration = 3;
+        else
+            blindDuration = 5;
+
+        target.CharStats.Blinded = true;
+        target.CharStats.BlindDuration = blindDuration;
     }
 
     //public void PreciseShot(CharacterBattle target, Action onAttackComplete)
@@ -221,10 +245,7 @@ public class CharacterBattle : MonoBehaviour {
 
     //}
 
-    //public void BlindingDart(CharacterBattle target, Action onAttackComplete)
-    //{
 
-    //}
 
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete) {
         this.slideTargetPosition = slideTargetPosition;

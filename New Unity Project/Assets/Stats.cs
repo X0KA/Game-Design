@@ -17,6 +17,10 @@ public class Stats : MonoBehaviour
     public int Damage = 0;
     public int Level = 1;
     public int Speed = 0;
+    public int MaxHealth = 0;
+    public bool Blinded = false;
+    public int BlindDuration = 0;
+
 
     // Start is called before the first frame update
     void Start()
