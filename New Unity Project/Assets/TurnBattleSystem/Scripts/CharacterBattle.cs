@@ -166,23 +166,65 @@ public class CharacterBattle : MonoBehaviour {
             {
                 BH.PopCharacterFromList(targetCharacterBattle);
             }
-         
-
-            //characterBase.PlayAnimAttack(attackDir, () => {
-            //    // Target hit
-            //    int damageAmount = UnityEngine.Random.Range(20, 50);
-            //    targetCharacterBattle.Damage(this, damageAmount);
-            //    }, () => {
-            //    // Attack completed, slide back
-            //    SlideToPosition(startingPosition, () => {
-            //        // Slide back completed, back to idle
-            //        state = State.Idle;
-            //        characterBase.PlayAnimIdle(attackDir);
-            //        onAttackComplete();
-            //    });
-            //});
         });
     }
+
+    public void PurifyingStrike(CharacterBattle[] targetCharacterBattle, Action onAttackComplete)
+    {
+        Vector3 slideTargetPosition = targetCharacterBattle[1].GetPosition() + (GetPosition() - targetCharacterBattle[1].GetPosition()).normalized *10f;
+        Vector3 startingPosition = GetPosition();
+
+        // Slide to Target
+        SlideToPosition(slideTargetPosition, () =>
+        {
+            // Arrived at Target, attack him
+            state = State.Busy;
+            animator.Play("SlashMelee1H");
+            //int damageAmount = UnityEngine.Random.Range(20, 50);
+            int damageAmount = CharStats.Damage /3;
+            for (int i = 0; i < targetCharacterBattle.Length;++i) {
+                targetCharacterBattle[i].Damage(this, damageAmount);
+            }
+
+            SlideToPosition(startingPosition, () =>
+            {
+                // Slide back completed, back to idle
+                state = State.Idle;
+                //characterBase.PlayAnimIdle(attackDir);
+                onAttackComplete();
+            });
+        });
+    }
+    public void Delirium(Action onComplete)
+    {
+        CharStats.Damage += 10;
+        CharStats.Speed += 5;
+    }
+
+    public void HollyWater(CharacterBattle targetCharacterBattle, Action onAttackComplete)
+    {
+        targetCharacterBattle.CharStats.Health += 40;
+    }
+
+    //public void PreciseShot(CharacterBattle target, Action onAttackComplete)
+    //{
+
+    //}
+
+    //public void Blessing(CharacterBattle target, Action onAttackComplete)
+    //{
+
+    //}
+
+    //public void Slice(CharacterBattle target, Action onAttackComplete)
+    //{
+
+    //}
+
+    //public void BlindingDart(CharacterBattle target, Action onAttackComplete)
+    //{
+
+    //}
 
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete) {
         this.slideTargetPosition = slideTargetPosition;
