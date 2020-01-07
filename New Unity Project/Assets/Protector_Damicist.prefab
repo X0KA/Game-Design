@@ -5450,7 +5450,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1109987028385428}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7655dbdbae96492abedad7bdc555301d, type: 3}
   m_Name: 
@@ -5462,7 +5462,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1109987028385428}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2cfe3e6f36484a49b6292e8d0b75f6c4, type: 3}
   m_Name: 
@@ -5590,6 +5590,9 @@ MonoBehaviour:
   Damage: 70
   Level: 1
   Speed: 0
+  MaxHealth: 0
+  Blinded: 0
+  BlindDuration: 0
 --- !u!1 &1142964113064948
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,11 +19,14 @@ using CodeMonkey.Utils;
 public class DamagePopup : MonoBehaviour {
 
     // Create a Damage Popup
-    public static DamagePopup Create(Vector3 position, int damageAmount, bool isCriticalHit) {
+
+
+
+    public static DamagePopup Create(Vector3 position, int damageAmount, bool isCriticalHit, bool healing = false) {
         Transform damagePopupTransform = Instantiate(GameAssets.i.pfDamagePopup, position, Quaternion.identity);
 
         DamagePopup damagePopup = damagePopupTransform.GetComponent<DamagePopup>();
-        damagePopup.Setup(damageAmount, isCriticalHit);
+        damagePopup.Setup(damageAmount, isCriticalHit,healing);
 
         return damagePopup;
     }
@@ -41,7 +44,7 @@ public class DamagePopup : MonoBehaviour {
         textMesh = transform.GetComponent<TextMeshPro>();
     }
 
-    public void Setup(int damageAmount, bool isCriticalHit) {
+    public void Setup(int damageAmount, bool isCriticalHit,bool healing) {
         textMesh.SetText(damageAmount.ToString());
         if (!isCriticalHit) {
             // Normal hit
@@ -51,6 +54,10 @@ public class DamagePopup : MonoBehaviour {
             // Critical hit
             textMesh.fontSize = 45;
             textColor = UtilsClass.GetColorFromString("FF2B00");
+        }
+        if (healing)
+        {
+            textColor = Color.green;
         }
         textMesh.color = textColor;
         disappearTimer = DISAPPEAR_TIMER_MAX;

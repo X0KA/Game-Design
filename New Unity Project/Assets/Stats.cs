@@ -9,7 +9,9 @@ public class Stats : MonoBehaviour
         None=-1,
         Monk,
         Warrior,
-        Mage
+        Mage,
+        Sacerdotist,
+
     }
     public string name = "DefaultName";
     public CharacterClass charclass = CharacterClass.None;
@@ -18,6 +20,7 @@ public class Stats : MonoBehaviour
     public int Level = 1;
     public int Speed = 0;
     public int MaxHealth = 0;
+    public int HealingPoints = 0;
     public bool Blinded = false;
     public int BlindDuration = 0;
 

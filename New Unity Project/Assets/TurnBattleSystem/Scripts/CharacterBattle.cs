@@ -25,6 +25,7 @@ public class CharacterBattle : MonoBehaviour {
     private State state;
     private Vector3 slideTargetPosition;
     private Action onSlideComplete;
+    private Action onWaitComplete;
     public bool isPlayerTeam;
     public bool Dead;
     private GameObject selectionCircleGameObject;
@@ -32,16 +33,22 @@ public class CharacterBattle : MonoBehaviour {
     private HealthSystem healthSystem;
     private World_Bar healthBar;
     private Animator animator;
-
+    public Stats.CharacterClass charclass;
+    private bool timeToAttack;
+    private bool going;
+    private Animation currentanimation;
+    public int ID;
     public int Health;
     public int Level;
     public int Experience = 0;
     public int Speed = 0;
+    private int counter;
 
     private enum State {
         Idle,
         Sliding,
         Dead,
+        Waiting,
         Busy,
     }
 
@@ -51,6 +58,7 @@ public class CharacterBattle : MonoBehaviour {
         BH = GameObject.Find("BattleHandler").GetComponent<BattleHandler>();
         HideSelectionCircle();
         state = State.Idle;
+        
     }
 
     private void Start() {
@@ -63,7 +71,8 @@ public class CharacterBattle : MonoBehaviour {
         Level = CharStats.Level;
         Health = CharStats.Health;
         Speed = CharStats.Speed;
-
+        charclass = CharStats.charclass;
+    
         if (isPlayerTeam) {
 
         } else {
@@ -73,11 +82,11 @@ public class CharacterBattle : MonoBehaviour {
         }
 
         healthSystem = new HealthSystem(CharStats.Health);
-        healthBar = new World_Bar(transform, new Vector3(0, 15), new Vector3(12, 1.7f), Color.grey, Color.red, 1f, 100, new World_Bar.Outline { color = Color.black, size = .6f });
+        healthBar = new World_Bar(transform, new Vector3(0, 18), new Vector3(12, 1.7f), Color.grey, Color.red, 1f, 100, new World_Bar.Outline { color = Color.black, size = .6f });
         healthSystem.OnHealthChanged += HealthSystem_OnHealthChanged;
         animator = m_GameObject.GetComponentInChildren<Animator>();
-
-        PlayAnimIdle();
+        going = false;
+        //PlayAnimIdle();
     }
 
     private void HealthSystem_OnHealthChanged(object sender, EventArgs e) {
@@ -94,15 +103,34 @@ public class CharacterBattle : MonoBehaviour {
 
     private void Update() {
 
-        switch (state) {
-        case State.Dead:
-            
-            animator.Play("DieBack");
-            break;
+        if(state == State.Dead)
+        {
+            animator.SetBool("DieBack", true);
+            BH.PopCharacterFromList(this, 0.9f);
+            return;
+        }
+
+        switch (state)
+        {
+
         case State.Idle:
             break;
         case State.Busy:
             break;
+        case State.Waiting:
+
+            if (timeToAttack)
+            {
+                animator.SetTrigger("Slash"); // Play animation randomly
+                timeToAttack = false;
+            }
+            counter++;
+            if (counter >= 40)
+            {
+                onWaitComplete();
+            }
+            break;
+
         case State.Sliding:
             float slideSpeed = 10f;
             transform.position += (slideTargetPosition - GetPosition()) * slideSpeed * Time.deltaTime;
@@ -125,7 +153,7 @@ public class CharacterBattle : MonoBehaviour {
 
         DamagePopup.Create(GetPosition(), damageAmount, false);
         Blood_Handler.SpawnBlood(GetPosition(), dirFromAttacker);
-
+        
         CodeMonkey.Utils.UtilsClass.ShakeCamera(1f, .1f);
 
         if (healthSystem.IsDead()) {
@@ -146,33 +174,37 @@ public class CharacterBattle : MonoBehaviour {
         Vector3 startingPosition = GetPosition();
 
         // Slide to Target
+        going = true;
+        timeToAttack = true;
         SlideToPosition(slideTargetPosition, () => {
             // Arrived at Target, attack him
+            counter = 0;
             state = State.Busy;
             Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
-            animator.Play("SlashMelee1H");
-            //int damageAmount = UnityEngine.Random.Range(20, 50);
-//            int damageAmount = CharStats.Damage;
-            int damageAmount = 0;
-            if (!CharStats.Blinded)
-                targetCharacterBattle.Damage(this, damageAmount);
-            else
-            {
-                if (--CharStats.BlindDuration < 1)
-                    CharStats.Blinded = false;
-            }
 
-            SlideToPosition(startingPosition, () => {
-                // Slide back completed, back to idle
-                state = State.Idle;
-                //characterBase.PlayAnimIdle(attackDir);
-                onAttackComplete();
+            waitPosition(() => {
+
+                int damageAmount = CharStats.Damage;
+                if (!CharStats.Blinded)
+                    targetCharacterBattle.Damage(this, damageAmount);
+                else
+                {
+                    if (--CharStats.BlindDuration < 1)
+                        CharStats.Blinded = false;
+                }
+
+                SlideToPosition(startingPosition, () =>
+                {
+                    // Slide back completed, back to idle
+                    state = State.Idle;
+                    onAttackComplete();
+                    //animator.Play("IdleMelee");
+                });
             });
 
-            if (targetCharacterBattle.IsDead())
-            {
-                BH.PopCharacterFromList(targetCharacterBattle);
-            }
+            
+
+          
         });
     }
 
@@ -186,6 +218,7 @@ public class CharacterBattle : MonoBehaviour {
         {
             // Arrived at Target, attack him
             state = State.Busy;
+         
             animator.Play("SlashMelee1H");
             //int damageAmount = UnityEngine.Random.Range(20, 50);
             int damageAmount = CharStats.Damage /3;
@@ -202,6 +235,7 @@ public class CharacterBattle : MonoBehaviour {
             });
         });
     }
+
     public void Delirium(Action onAttackComplete)
     {
         CharStats.Damage += 10;
@@ -211,8 +245,19 @@ public class CharacterBattle : MonoBehaviour {
 
     public void HollyWater(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
-        targetCharacterBattle.CharStats.Health += 40;
-        onAttackComplete();
+        animator.Play("Victory");
+
+        waitPosition(() => {
+
+            DamagePopup.Create(targetCharacterBattle.GetPosition(), CharStats.HealingPoints, false, true);
+            targetCharacterBattle.healthSystem.Heal(CharStats.HealingPoints);
+            onAttackComplete();
+
+            state = State.Idle;
+     
+        });
+
+    
     }
 
     public void BlindingDart(CharacterBattle targetCharacterBattle, Action onAttackComplete)
@@ -251,20 +296,25 @@ public class CharacterBattle : MonoBehaviour {
     //}
 
 
-
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete) {
         this.slideTargetPosition = slideTargetPosition;
         this.onSlideComplete = onSlideComplete;
         state = State.Sliding;
-        if (slideTargetPosition.x > 0) {
-            animator.Play("ChargeAttack2H");
-            //characterBase.PlayAnimSlideRight();
-        } else {
-            animator.Play("ChargeAttack2H");
 
-            //characterBase.PlayAnimSlideLeft();
+        if (going==true)
+        {
+            animator.Play("ChargeAttack2H");
+            going = false;
         }
+   
     }
+    private void waitPosition(Action onWaitComplete)
+    {
+        this.onWaitComplete = onWaitComplete;
+        state = State.Waiting;
+        //animator.Play("SlashMelee1H");
+    }
+
 
     public void HideSelectionCircle() {
         selectionCircleGameObject.SetActive(false);
@@ -273,5 +323,17 @@ public class CharacterBattle : MonoBehaviour {
     public void ShowSelectionCircle() { 
         selectionCircleGameObject.SetActive(true);
     }
+
+
+    bool AnimatorIsPlaying()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1;
+    }
+
+    bool AnimatorIsPlaying(string stateName)
+    {
+        return AnimatorIsPlaying() && animator.GetCurrentAnimatorStateInfo(0).IsName(stateName);
+    }
+
 
 }

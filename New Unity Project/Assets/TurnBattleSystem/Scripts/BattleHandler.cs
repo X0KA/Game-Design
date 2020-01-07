@@ -33,8 +33,8 @@ public class BattleHandler : MonoBehaviour {
     private int IndexCreatorPlayers=0;
     private int IndexCreatorEnemys=0;
 
-    private CharacterBattle[] playerCharacterBattle = new CharacterBattle[3];
-    private CharacterBattle[] enemyCharacterBattle = new CharacterBattle[3];
+    private List<CharacterBattle> playerCharacterBattle = new List <CharacterBattle>();
+    private List<CharacterBattle> enemyCharacterBattle = new List<CharacterBattle>();
     private CharacterBattle activeCharacterBattle;
     private List<CharacterBattle> QueueOfCharacterBattles = new List<CharacterBattle>();
     private State state;
@@ -52,8 +52,8 @@ public class BattleHandler : MonoBehaviour {
 
         for(int i = 0; i < 3; i++)
         {
-            playerCharacterBattle[i] = SpawnCharacter(true, Player[IndexCreatorPlayers]);
-            enemyCharacterBattle[i] = SpawnCharacter(false, Enemy[IndexCreatorEnemys]);
+            playerCharacterBattle.Add(SpawnCharacter(true, Player[IndexCreatorPlayers]));
+            enemyCharacterBattle.Add(SpawnCharacter(false, Enemy[IndexCreatorEnemys]));
             QueueOfCharacterBattles.Add(playerCharacterBattle[i]);
             QueueOfCharacterBattles.Add(enemyCharacterBattle[i]);
         }
@@ -88,9 +88,11 @@ public class BattleHandler : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.G))
             {
                 state = State.Busy;
-                activeCharacterBattle.Attack(enemyCharacterBattle[1],() => {
-                    ChooseNextActiveCharacter();
-                });
+                ToAttack(activeCharacterBattle.charclass, enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)]);
+
+                //activeCharacterBattle.Attack(enemyCharacterBattle[Random.Range(0,enemyCharacterBattle.Count)],() => {
+                //    ChooseNextActiveCharacter();
+                //});
             }
         }
     }
@@ -108,6 +110,7 @@ public class BattleHandler : MonoBehaviour {
 
         Transform characterTransform = Instantiate(pfCharacterBattle, position, Quaternion.identity);
         CharacterBattle characterBattle = characterTransform.GetComponent<CharacterBattle>();
+        characterBattle.ID = Random.Range(0,100000000);
         characterBattle.Setup(isPlayerTeam,toSpawn);
 
         return characterBattle;
@@ -136,10 +139,8 @@ public class BattleHandler : MonoBehaviour {
         if (!activeCharacterBattle.isPlayerTeam)
         {
             state = State.Busy;
-            activeCharacterBattle.Attack(playerCharacterBattle[Random.Range(0, 3)], () =>
-            {
-                ChooseNextActiveCharacter();
-            });
+            ToAttack(activeCharacterBattle.charclass,playerCharacterBattle[Random.Range(0, playerCharacterBattle.Count)]);
+
         }
         else
             state = State.WaitingForPlayer;
@@ -163,17 +164,18 @@ public class BattleHandler : MonoBehaviour {
 
         //if()
 
-        if (playerCharacterBattle[0].Dead&& playerCharacterBattle[1].Dead && playerCharacterBattle[2].Dead) {
+        if (playerCharacterBattle.Count==0) {
             // Player dead, enemy wins
             //CodeMonkey.CMDebug.TextPopupMouse("Enemy Wins!");
             BattleOverWindow.Show_Static("Enemy Wins!");
             return true;
         }
-        if (enemyCharacterBattle[0].Dead && enemyCharacterBattle[1].Dead && playerCharacterBattle[2].Dead) {
+        if (enemyCharacterBattle.Count==0) {
             // Enemy dead, player wins
             //CodeMonkey.CMDebug.TextPopupMouse("Player Wins!");
             BattleOverWindow.Show_Static("Player Wins!");
             return true;
+            
         }
         
         return false;
@@ -184,8 +186,73 @@ public class BattleHandler : MonoBehaviour {
         return p2.Speed.CompareTo(p1.Speed);
     }
 
-    public void PopCharacterFromList(CharacterBattle toPop)
+    
+    public void PopCharacterFromList(CharacterBattle toPop,float delay)
     {
         QueueOfCharacterBattles.Remove(toPop);
+
+        if (toPop.isPlayerTeam)
+        {
+            //CharacterBattle handler = toPop;
+            playerCharacterBattle.Remove(toPop);
+            Destroy(toPop.gameObject,delay);
+            return;
+
+        }
+        else
+        {
+            enemyCharacterBattle.Remove(toPop);
+            Destroy(toPop.gameObject,delay);
+            return;
+        }
+
     }
+    
+    private void ToAttack(Stats.CharacterClass charclass,CharacterBattle target)
+    {
+        switch (charclass)
+        {
+            case Stats.CharacterClass.None:
+                break;
+            case Stats.CharacterClass.Monk:
+                activeCharacterBattle.Attack(target, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case Stats.CharacterClass.Warrior:
+                break;
+            case Stats.CharacterClass.Mage:
+                break;
+            case Stats.CharacterClass.Sacerdotist:
+                int i = Random.Range(0, 2);
+                //int i = 1;
+                if (i == 0)
+                {
+                    activeCharacterBattle.Attack(target, () => {
+                        ChooseNextActiveCharacter();
+                    });
+                }
+                else if (i == 1)
+                {
+                    if (activeCharacterBattle.isPlayerTeam)
+                    {
+                        activeCharacterBattle.HollyWater(playerCharacterBattle[Random.Range(0, playerCharacterBattle.Count)], () =>
+                        {
+                            ChooseNextActiveCharacter();
+                        });
+                    }
+                    else
+                    {
+                        activeCharacterBattle.HollyWater(enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)], () =>
+                        {
+                            ChooseNextActiveCharacter();
+                        });
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 }
