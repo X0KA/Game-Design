@@ -17,6 +17,7 @@ MonoBehaviour:
   Health: 100
   Damage: 5
   Level: 1
+  Speed: 0
 --- !u!1001 &5024340521752730915
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -74,15 +75,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4305107873441922, guid: dd8de73932308504a9b37f46d0ce0ce3, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4305107873441922, guid: dd8de73932308504a9b37f46d0ce0ce3, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4305107873441922, guid: dd8de73932308504a9b37f46d0ce0ce3, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 114665035978887628, guid: dd8de73932308504a9b37f46d0ce0ce3,
         type: 3}
