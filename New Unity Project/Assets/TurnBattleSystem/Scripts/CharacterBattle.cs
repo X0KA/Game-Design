@@ -152,8 +152,15 @@ public class CharacterBattle : MonoBehaviour {
             Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
             animator.Play("SlashMelee1H");
             //int damageAmount = UnityEngine.Random.Range(20, 50);
-            int damageAmount = CharStats.Damage;
-            targetCharacterBattle.Damage(this, damageAmount);
+//            int damageAmount = CharStats.Damage;
+            int damageAmount = 0;
+            if (!CharStats.Blinded)
+                targetCharacterBattle.Damage(this, damageAmount);
+            else
+            {
+                if (--CharStats.BlindDuration < 1)
+                    CharStats.Blinded = false;
+            }
 
             SlideToPosition(startingPosition, () => {
                 // Slide back completed, back to idle
@@ -166,23 +173,84 @@ public class CharacterBattle : MonoBehaviour {
             {
                 BH.PopCharacterFromList(targetCharacterBattle);
             }
-         
-
-            //characterBase.PlayAnimAttack(attackDir, () => {
-            //    // Target hit
-            //    int damageAmount = UnityEngine.Random.Range(20, 50);
-            //    targetCharacterBattle.Damage(this, damageAmount);
-            //    }, () => {
-            //    // Attack completed, slide back
-            //    SlideToPosition(startingPosition, () => {
-            //        // Slide back completed, back to idle
-            //        state = State.Idle;
-            //        characterBase.PlayAnimIdle(attackDir);
-            //        onAttackComplete();
-            //    });
-            //});
         });
     }
+
+    public void PurifyingStrike(CharacterBattle[] targetCharacterBattle, Action onAttackComplete)
+    {
+        Vector3 slideTargetPosition = targetCharacterBattle[1].GetPosition() + (GetPosition() - targetCharacterBattle[1].GetPosition()).normalized *10f;
+        Vector3 startingPosition = GetPosition();
+
+        // Slide to Target
+        SlideToPosition(slideTargetPosition, () =>
+        {
+            // Arrived at Target, attack him
+            state = State.Busy;
+            animator.Play("SlashMelee1H");
+            //int damageAmount = UnityEngine.Random.Range(20, 50);
+            int damageAmount = CharStats.Damage /3;
+            for (int i = 0; i < targetCharacterBattle.Length;++i) {
+                targetCharacterBattle[i].Damage(this, damageAmount);
+            }
+
+            SlideToPosition(startingPosition, () =>
+            {
+                // Slide back completed, back to idle
+                state = State.Idle;
+                //characterBase.PlayAnimIdle(attackDir);
+                onAttackComplete();
+            });
+        });
+    }
+    public void Delirium(Action onAttackComplete)
+    {
+        CharStats.Damage += 10;
+        CharStats.Speed += 50;
+        onAttackComplete();
+    }
+
+    public void HollyWater(CharacterBattle targetCharacterBattle, Action onAttackComplete)
+    {
+        targetCharacterBattle.CharStats.Health += 40;
+        onAttackComplete();
+    }
+
+    public void BlindingDart(CharacterBattle targetCharacterBattle, Action onAttackComplete)
+    {
+        int blindDuration = 0;
+
+        if (CharStats.Level < 9)
+            blindDuration = 2;
+        else if (CharStats.Level < 10)
+            blindDuration = 3;
+        else
+            blindDuration = 4;
+
+        targetCharacterBattle.CharStats.Blinded = true;
+        targetCharacterBattle.CharStats.BlindDuration = blindDuration;
+
+        int damageAmount = CharStats.Damage / 6;
+        targetCharacterBattle.Damage(this, damageAmount);
+
+        onAttackComplete();
+    }
+
+    public void PreciSeshot(CharacterBattle target, Action onattackcomplete)
+    {
+
+    }
+
+    //public void Blessing(CharacterBattle target, Action onAttackComplete)
+    //{
+
+    //}
+
+    //public void Slice(CharacterBattle target, Action onAttackComplete)
+    //{
+
+    //}
+
+
 
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete) {
         this.slideTargetPosition = slideTargetPosition;
