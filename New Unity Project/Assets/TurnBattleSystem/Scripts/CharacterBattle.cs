@@ -152,8 +152,8 @@ public class CharacterBattle : MonoBehaviour {
             Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
             animator.Play("SlashMelee1H");
             //int damageAmount = UnityEngine.Random.Range(20, 50);
-            int damageAmount = CharStats.Damage;
-
+//            int damageAmount = CharStats.Damage;
+            int damageAmount = 0;
             if (!CharStats.Blinded)
                 targetCharacterBattle.Damage(this, damageAmount);
             else
@@ -215,7 +215,7 @@ public class CharacterBattle : MonoBehaviour {
         onAttackComplete();
     }
 
-    public void BlindingDart(CharacterBattle target, Action onAttackComplete)
+    public void BlindingDart(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
         int blindDuration = 0;
 
@@ -224,16 +224,21 @@ public class CharacterBattle : MonoBehaviour {
         else if (CharStats.Level < 10)
             blindDuration = 3;
         else
-            blindDuration = 5;
+            blindDuration = 4;
 
-        target.CharStats.Blinded = true;
-        target.CharStats.BlindDuration = blindDuration;
+        targetCharacterBattle.CharStats.Blinded = true;
+        targetCharacterBattle.CharStats.BlindDuration = blindDuration;
+
+        int damageAmount = CharStats.Damage / 6;
+        targetCharacterBattle.Damage(this, damageAmount);
+
+        onAttackComplete();
     }
 
-    //public void PreciseShot(CharacterBattle target, Action onAttackComplete)
-    //{
+    public void PreciSeshot(CharacterBattle target, Action onattackcomplete)
+    {
 
-    //}
+    }
 
     //public void Blessing(CharacterBattle target, Action onAttackComplete)
     //{
