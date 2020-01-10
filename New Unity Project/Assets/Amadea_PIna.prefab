@@ -4855,7 +4855,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2dc9e334bab549faa157f28ba6136ebf, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -5277,7 +5277,7 @@ Transform:
   m_GameObject: {fileID: 1109987028385428}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -3.4, y: 0.6, z: 0}
-  m_LocalScale: {x: 6, y: 6, z: 6}
+  m_LocalScale: {x: 11, y: 11, z: 11}
   m_Children:
   - {fileID: 4137128368968656}
   m_Father: {fileID: 0}
@@ -5584,10 +5584,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606b1665c1c7677418576ceaa00e7330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: DefaultName
-  charclass: 3
-  Health: 100
-  Damage: 70
+  particles:
+  - {fileID: 1797936735143735809, guid: 75daf50a9ea72d14fa755963643ccfcc, type: 3}
+  name: Amadea
+  charclass: 4
+  Health: 70
+  Damage: 10
   Level: 1
   Speed: 0
   MaxHealth: 0
@@ -15493,7 +15495,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 39aff146426e4678ba2fb117117f0818, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -20878,7 +20880,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 39aff146426e4678ba2fb117117f0818, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -26407,7 +26409,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2dc9e334bab549faa157f28ba6136ebf, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0

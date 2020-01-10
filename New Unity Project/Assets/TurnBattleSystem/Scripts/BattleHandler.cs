@@ -78,6 +78,20 @@ public class BattleHandler : MonoBehaviour {
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            state = State.Busy;
+            SetActiveCharacterBattle(playerCharacterBattle[2]);
+            //activeCharacterBattle.SheerWill(() => {
+            //    ChooseNextActiveCharacter();
+            //});
+            activeCharacterBattle.Smoke(enemyCharacterBattle, () =>
+            {
+                ChooseNextActiveCharacter();
+            });
+        }
+
+
         if (state == State.WaitingForPlayer) {
             if (Input.GetKeyDown(KeyCode.Space)) {
                 state = State.Busy;
@@ -130,7 +144,7 @@ public class BattleHandler : MonoBehaviour {
         if (TestBattleOver()) {
             return;
         }
-
+        UpdateBufs();
         QueueOfCharacterBattles.RemoveAt(0);
         QueueOfCharacterBattles.Add(activeCharacterBattle);
         //activeCharacterBattle = QueueOfCharacterBattles[0];
@@ -145,17 +159,6 @@ public class BattleHandler : MonoBehaviour {
         else
             state = State.WaitingForPlayer;
 
-        //if (activeCharacterBattle == playerCharacterBattle) {
-        //    SetActiveCharacterBattle(enemyCharacterBattle);
-        //    state = State.Busy;
-            
-        //    enemyCharacterBattle.Attack(playerCharacterBattle, () => {
-        //        ChooseNextActiveCharacter();
-        //    });
-        //} else {
-        //    SetActiveCharacterBattle(playerCharacterBattle);
-        //    state = State.WaitingForPlayer;
-        //}
     }
 
     private bool TestBattleOver() {
@@ -165,14 +168,12 @@ public class BattleHandler : MonoBehaviour {
         //if()
 
         if (playerCharacterBattle.Count==0) {
-            // Player dead, enemy wins
-            //CodeMonkey.CMDebug.TextPopupMouse("Enemy Wins!");
+
             BattleOverWindow.Show_Static("Enemy Wins!");
             return true;
         }
         if (enemyCharacterBattle.Count==0) {
-            // Enemy dead, player wins
-            //CodeMonkey.CMDebug.TextPopupMouse("Player Wins!");
+
             BattleOverWindow.Show_Static("Player Wins!");
             return true;
             
@@ -210,49 +211,172 @@ public class BattleHandler : MonoBehaviour {
     
     private void ToAttack(Stats.CharacterClass charclass,CharacterBattle target)
     {
+        int indexSkill = RandomizeAttack();
+
         switch (charclass)
         {
             case Stats.CharacterClass.None:
                 break;
             case Stats.CharacterClass.Monk:
+                MonkSkills(indexSkill,target);
+                break;
+            case Stats.CharacterClass.Warrior:
+                WarriorSkills(indexSkill, target);
+                break;
+            case Stats.CharacterClass.Sacerdotist:
+                SacerdotistSkills(indexSkill, target);
+                break;
+            case Stats.CharacterClass.Enemy:
+                //only to Test
                 activeCharacterBattle.Attack(target, () => {
                     ChooseNextActiveCharacter();
                 });
-                break;
-            case Stats.CharacterClass.Warrior:
-                break;
-            case Stats.CharacterClass.Mage:
-                break;
-            case Stats.CharacterClass.Sacerdotist:
-                int i = Random.Range(0, 2);
-                //int i = 1;
-                if (i == 0)
-                {
-                    activeCharacterBattle.Attack(target, () => {
-                        ChooseNextActiveCharacter();
-                    });
-                }
-                else if (i == 1)
-                {
-                    if (activeCharacterBattle.isPlayerTeam)
-                    {
-                        activeCharacterBattle.HollyWater(playerCharacterBattle[Random.Range(0, playerCharacterBattle.Count)], () =>
-                        {
-                            ChooseNextActiveCharacter();
-                        });
-                    }
-                    else
-                    {
-                        activeCharacterBattle.HollyWater(enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)], () =>
-                        {
-                            ChooseNextActiveCharacter();
-                        });
-                    }
-                }
                 break;
             default:
                 break;
         }
     }
 
+    public CharacterBattle getMinimumHealth()
+    {
+
+        if (activeCharacterBattle.isPlayerTeam)
+        {
+            CharacterBattle temp = new CharacterBattle();
+            foreach (CharacterBattle pt in playerCharacterBattle)
+            {
+                if (temp.Health < pt.Health)
+                {
+                    temp = pt;
+                }
+            }
+            return temp;
+        }
+        else
+        {
+            CharacterBattle temp = new CharacterBattle();
+            foreach (CharacterBattle et in enemyCharacterBattle)
+            {
+                if (temp.Health < et.Health)
+                {
+                    temp = et;
+                }
+            }
+            return temp;
+        }
+
+    }
+    
+    public int RandomizeAttack()
+    {
+
+        return Random.Range(0, activeCharacterBattle.CharStats.AbleToSkill());
+      
+    }
+
+    private void MonkSkills(int skill, CharacterBattle target)
+    {
+        switch (skill)
+        {
+            case 0:
+                activeCharacterBattle.Attack(target, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 1:
+                activeCharacterBattle.PurifyingStrike(enemyCharacterBattle, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 2:
+                activeCharacterBattle.LethalThreat(target, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 3:
+                activeCharacterBattle.SheerWill(() => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            default:
+                break;
+        }
+       
+    }
+
+    private void SacerdotistSkills(int skill, CharacterBattle target)
+    {
+        switch (skill)
+        {
+            case 0:
+                activeCharacterBattle.Attack(target, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 1:
+                activeCharacterBattle.HollyWater(getMinimumHealth(), () =>
+                {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 2:
+                activeCharacterBattle.PreciseShot(target, () =>
+                {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 3:
+                activeCharacterBattle.Smoke(enemyCharacterBattle,() =>
+                {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void WarriorSkills(int skill, CharacterBattle target)
+    {
+        switch (skill)
+        {
+            case 0:
+                activeCharacterBattle.Attack(target, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 1:
+                activeCharacterBattle.Attack(target, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void UpdateBufs()
+    {
+        foreach(CharacterBattle ch in QueueOfCharacterBattles)
+        {
+            if (ch.BuffTurns > 0)
+            {
+                ch.BuffTurns--;
+                if (ch.BuffTurns == 0)
+                {
+                    ch.DeactiveBuff = true;
+                }
+            }
+            
+            if(ch.DeBuffTurns>0)
+            {
+                ch.DeBuffTurns--;
+                if (ch.DeBuffTurns == 0)
+                {
+                    ch.DeactiveDeBuff = true;
+                }
+            }
+        }
+    }
 }

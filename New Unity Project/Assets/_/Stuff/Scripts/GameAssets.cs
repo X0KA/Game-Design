@@ -37,6 +37,7 @@ public class GameAssets : MonoBehaviour {
     public Transform pfEnemyFlyingBody;
     public Transform pfImpactEffect;
     public Transform pfDamagePopup;
+    public Transform pfTextScript;
 
     public Material m_WeaponTracer;
     public Material m_MarineSpriteSheet;

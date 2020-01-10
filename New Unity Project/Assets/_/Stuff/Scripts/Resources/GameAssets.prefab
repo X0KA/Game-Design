@@ -55,5 +55,7 @@ MonoBehaviour:
     type: 3}
   pfDamagePopup: {fileID: 2920174026715650587, guid: d5cbb6859cac94e41a282a83df2e600c,
     type: 3}
+  pfTextScript: {fileID: 2920174026715650587, guid: 148fb898bbe90314885d62190a19b9b8,
+    type: 3}
   m_WeaponTracer: {fileID: 2100000, guid: f3f8a9e888e8f7d4d9a9b9c0271d0338, type: 2}
-  m_MarineSpriteSheet: {fileID: 2100000, guid: ab5acf6e79667694d9ceb91aca8abdc3, type: 2}
+  m_MarineSpriteSheet: {fileID: 0}
