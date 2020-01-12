@@ -30,6 +30,12 @@ public class BattleHandler : MonoBehaviour {
     public GameObject[] Player;
     public GameObject[] Enemy;
 
+    public GameObject monkSkillsMenu;
+    public GameObject priestSkillsMenu;
+    public GameObject warriorSkillsMenu;
+
+    public CharacterBattle currentTarget;
+
     private int IndexCreatorPlayers=0;
     private int IndexCreatorEnemys=0;
 
@@ -93,6 +99,10 @@ public class BattleHandler : MonoBehaviour {
 
 
         if (state == State.WaitingForPlayer) {
+
+            
+
+
             if (Input.GetKeyDown(KeyCode.Space)) {
                 state = State.Busy;
                 activeCharacterBattle.BlindingDart(enemyCharacterBattle[1], () => {
@@ -101,12 +111,9 @@ public class BattleHandler : MonoBehaviour {
             }
             else if (Input.GetKeyDown(KeyCode.G))
             {
+            currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
                 state = State.Busy;
-                ToAttack(activeCharacterBattle.charclass, enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)]);
-
-                //activeCharacterBattle.Attack(enemyCharacterBattle[Random.Range(0,enemyCharacterBattle.Count)],() => {
-                //    ChooseNextActiveCharacter();
-                //});
+                ToAttack(activeCharacterBattle.charclass, currentTarget);
             }
         }
     }
@@ -153,11 +160,32 @@ public class BattleHandler : MonoBehaviour {
         if (!activeCharacterBattle.isPlayerTeam)
         {
             state = State.Busy;
-            ToAttack(activeCharacterBattle.charclass,playerCharacterBattle[Random.Range(0, playerCharacterBattle.Count)]);
+            ToAttack(activeCharacterBattle.charclass, playerCharacterBattle[Random.Range(0, playerCharacterBattle.Count)]);
 
         }
         else
+        {
             state = State.WaitingForPlayer;
+            currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
+            switch (activeCharacterBattle.charclass)
+            {
+                case Stats.CharacterClass.Monk:
+                    monkSkillsMenu.SetActive(true);
+                    warriorSkillsMenu.SetActive(false);
+                    priestSkillsMenu.SetActive(false);
+                    break;
+                case Stats.CharacterClass.Warrior:
+                    monkSkillsMenu.SetActive(false);
+                    warriorSkillsMenu.SetActive(true);
+                    priestSkillsMenu.SetActive(false);
+                    break;
+                case Stats.CharacterClass.Sacerdotist:
+                    monkSkillsMenu.SetActive(false);
+                    warriorSkillsMenu.SetActive(false);
+                    priestSkillsMenu.SetActive(true);
+                    break;
+            }
+        }
 
     }
 
@@ -209,7 +237,7 @@ public class BattleHandler : MonoBehaviour {
 
     }
     
-    private void ToAttack(Stats.CharacterClass charclass,CharacterBattle target)
+    public void ToAttack(Stats.CharacterClass charclass,CharacterBattle target)
     {
         int indexSkill = RandomizeAttack();
 
@@ -274,7 +302,7 @@ public class BattleHandler : MonoBehaviour {
       
     }
 
-    private void MonkSkills(int skill, CharacterBattle target)
+    public void MonkSkills(int skill, CharacterBattle target)
     {
         switch (skill)
         {
@@ -304,7 +332,7 @@ public class BattleHandler : MonoBehaviour {
        
     }
 
-    private void SacerdotistSkills(int skill, CharacterBattle target)
+    public void SacerdotistSkills(int skill, CharacterBattle target)
     {
         switch (skill)
         {
@@ -337,7 +365,7 @@ public class BattleHandler : MonoBehaviour {
 
     }
 
-    private void WarriorSkills(int skill, CharacterBattle target)
+    public void WarriorSkills(int skill, CharacterBattle target)
     {
         switch (skill)
         {
@@ -355,6 +383,102 @@ public class BattleHandler : MonoBehaviour {
                 break;
         }
     }
+
+    public void MonkSkills(int skill)
+    {
+        if (state == State.Busy)
+            return;
+
+        state = State.Busy;
+        switch (skill)
+        {
+            case 0:
+                activeCharacterBattle.Attack(currentTarget, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 1:
+                activeCharacterBattle.PurifyingStrike(enemyCharacterBattle, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 2:
+                activeCharacterBattle.LethalThreat(currentTarget, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 3:
+                activeCharacterBattle.SheerWill(() => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    public void SacerdotistSkills(int skill)
+    {
+
+        if (state == State.Busy)
+            return;
+
+        state = State.Busy;
+        switch (skill)
+        {
+            case 0:
+                activeCharacterBattle.Attack(currentTarget, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 1:
+                activeCharacterBattle.HollyWater(getMinimumHealth(), () =>
+                {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 2:
+                activeCharacterBattle.PreciseShot(currentTarget, () =>
+                {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 3:
+                activeCharacterBattle.Smoke(enemyCharacterBattle, () =>
+                {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    public void WarriorSkills(int skill)
+    {
+        if (state == State.Busy)
+            return;
+
+        state = State.Busy;
+        switch (skill)
+        {
+            case 0:
+                activeCharacterBattle.Attack(currentTarget, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 1:
+                activeCharacterBattle.Attack(currentTarget, () => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
 
     private void UpdateBufs()
     {
