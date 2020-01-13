@@ -396,28 +396,36 @@ public class BattleHandler : MonoBehaviour {
         if (state == State.Busy)
             return;
 
-        state = State.Busy;
+        
         switch (skill)
         {
             case 0:
+                if (currentTarget.charclass == Stats.CharacterClass.Sacerdotist || currentTarget.charclass == Stats.CharacterClass.Warrior)
+                    return;
                 activeCharacterBattle.Attack(currentTarget, () => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 1:
                 activeCharacterBattle.PurifyingStrike(enemyCharacterBattle, () => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 2:
+                if (currentTarget.charclass == Stats.CharacterClass.Sacerdotist || currentTarget.charclass == Stats.CharacterClass.Warrior)
+                    return;
                 activeCharacterBattle.LethalThreat(currentTarget, () => {
                     ChooseNextActiveCharacter();
+                    state = State.Busy;
                 });
                 break;
             case 3:
                 activeCharacterBattle.SheerWill(() => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             default:
                 break;
@@ -431,31 +439,47 @@ public class BattleHandler : MonoBehaviour {
         if (state == State.Busy)
             return;
 
-        state = State.Busy;
+        //state = State.Busy;
         switch (skill)
         {
             case 0:
+
+                if (currentTarget.charclass == Stats.CharacterClass.Monk || currentTarget.charclass == Stats.CharacterClass.Warrior)
+                    return;
+
                 activeCharacterBattle.Attack(currentTarget, () => {
                     ChooseNextActiveCharacter();
                 });
+
+                state = State.Busy;
                 break;
             case 1:
+                if (!(currentTarget.charclass == Stats.CharacterClass.Monk) && !(currentTarget.charclass == Stats.CharacterClass.Warrior))
+                    return;
+
                 activeCharacterBattle.HollyWater(getMinimumHealth(), () =>
                 {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 2:
+                if (currentTarget.charclass == Stats.CharacterClass.Monk || currentTarget.charclass == Stats.CharacterClass.Warrior)
+                    return;
                 activeCharacterBattle.PreciseShot(currentTarget, () =>
                 {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 3:
+                if (currentTarget.charclass == Stats.CharacterClass.Monk || currentTarget.charclass == Stats.CharacterClass.Warrior)
+                    return;
                 activeCharacterBattle.Smoke(enemyCharacterBattle, () =>
                 {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             default:
                 break;
@@ -468,18 +492,20 @@ public class BattleHandler : MonoBehaviour {
         if (state == State.Busy)
             return;
 
-        state = State.Busy;
+        //state = State.Busy;
         switch (skill)
         {
             case 0:
                 activeCharacterBattle.Attack(currentTarget, () => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 1:
                 activeCharacterBattle.Attack(currentTarget, () => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             default:
                 break;
@@ -521,7 +547,6 @@ public class BattleHandler : MonoBehaviour {
             {
                 Debug.DrawRay(ray.GetPoint(0.0f), ray.direction * 70.0f, Color.blue);
                 currentTarget = hit_.collider.gameObject.GetComponent<Stats>().parent.GetComponent<CharacterBattle>();
-
             }
             else if (!EventSystem.current.IsPointerOverGameObject())
             {
