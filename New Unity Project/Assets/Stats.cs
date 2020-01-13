@@ -26,7 +26,8 @@ public class Stats : MonoBehaviour
     public bool Blinded = false;
     public int BlindDuration = 0;
 
-
+    public GameObject parent;
+    
     public int AbleToSkill()
     {
         int ret=1;

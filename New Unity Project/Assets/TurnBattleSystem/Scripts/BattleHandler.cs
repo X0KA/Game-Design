@@ -13,6 +13,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BattleHandler : MonoBehaviour {
 
@@ -44,6 +45,10 @@ public class BattleHandler : MonoBehaviour {
     private CharacterBattle activeCharacterBattle;
     private List<CharacterBattle> QueueOfCharacterBattles = new List<CharacterBattle>();
     private State state;
+
+    //Used to click on characters
+    private Ray ray;
+    public Camera camera;
 
     private enum State {
         WaitingForPlayer,
@@ -83,6 +88,8 @@ public class BattleHandler : MonoBehaviour {
         {
             return;
         }
+
+        ClickOnObjective();
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -500,6 +507,25 @@ public class BattleHandler : MonoBehaviour {
                 {
                     ch.DeactiveDeBuff = true;
                 }
+            }
+        }
+    }
+
+    private void ClickOnObjective()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            ray = camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit_;
+            if (Physics.Raycast(ray, out hit_, 200.0f))
+            {
+                Debug.DrawRay(ray.GetPoint(0.0f), ray.direction * 70.0f, Color.blue);
+                currentTarget = hit_.collider.gameObject.GetComponent<Stats>().parent.GetComponent<CharacterBattle>();
+
+            }
+            else if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                Debug.DrawRay(ray.GetPoint(0.0f), ray.direction * 70.0f, Color.red);
             }
         }
     }

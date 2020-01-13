@@ -72,10 +72,7 @@ public class CharacterBattle : MonoBehaviour {
         HideSelectionCircle();
         state = State.Idle;
     }
-
-    private void Start() {
-    }
-
+    
     public void Setup(bool isPlayerTeam,GameObject Own) {
 
         this.isPlayerTeam = isPlayerTeam;
@@ -87,7 +84,9 @@ public class CharacterBattle : MonoBehaviour {
         Speed = CharStats.Speed;
         charclass = CharStats.charclass;
         particles = CharStats.particles;
-    
+
+        CharStats.parent = this.gameObject;
+
         if (isPlayerTeam)
         {
             InShield = m_GameObject.transform.Find("SheerWillShield").gameObject;

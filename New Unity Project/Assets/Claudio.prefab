@@ -5261,6 +5261,7 @@ GameObject:
   - component: {fileID: 114839934136365652}
   - component: {fileID: 114576218883810672}
   - component: {fileID: -4357100336590824027}
+  - component: {fileID: 6001916767427036987}
   m_Layer: 0
   m_Name: Claudio
   m_TagString: Untagged
@@ -5596,6 +5597,19 @@ MonoBehaviour:
   HealingPoints: 0
   Blinded: 0
   BlindDuration: 0
+--- !u!65 &6001916767427036987
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109987028385428}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.41, y: 2.88, z: 1}
+  m_Center: {x: 0, y: 1.24, z: 0}
 --- !u!1 &1142964113064948
 GameObject:
   m_ObjectHideFlags: 0
