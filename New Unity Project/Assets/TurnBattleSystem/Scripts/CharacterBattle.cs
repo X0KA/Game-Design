@@ -56,11 +56,14 @@ public class CharacterBattle : MonoBehaviour {
     public GameObject toDestroy;
     public GameObject deBuffToDestroy;
     public LayerManager LM;
+    private LoadingInfo info;
 
     private bool invulnerable;
     private bool Hide;
     private bool bleed;
     private int bleedcounter;
+    private GameObject ObjectiveCursor;
+
 
     private enum State {
         Idle,
@@ -80,9 +83,12 @@ public class CharacterBattle : MonoBehaviour {
     
     public void Setup(bool isPlayerTeam,GameObject Own) {
 
+ 
         this.isPlayerTeam = isPlayerTeam;
 
         m_GameObject = Instantiate(Own,transform.position,Quaternion.identity,transform);
+        ObjectiveCursor = m_GameObject.transform.Find("Objective").gameObject;
+        ObjectiveCursor.SetActive(false);
         CharStats = m_GameObject.GetComponent<Stats>();
         Level = CharStats.Level;
         Health = CharStats.Health;
@@ -129,6 +135,15 @@ public class CharacterBattle : MonoBehaviour {
         //PlayAnimIdle();
     }
 
+    public void EnableCursor()
+    {
+        ObjectiveCursor.SetActive(true);
+    }
+    public void DisableCursor()
+    {
+        ObjectiveCursor.SetActive(false);
+    }
+
     private void HealthSystem_OnHealthChanged(object sender, EventArgs e) {
         healthBar.SetSize(healthSystem.GetHealthPercent());
     }
@@ -148,7 +163,7 @@ public class CharacterBattle : MonoBehaviour {
             invulnerable = false;
             if (Hide == true)
             {
-                LM.RestartDefaultColors();
+                //LM.RestartDefaultColors();
                 Hide = false;
             }
             InShield.SetActive(false);
@@ -533,7 +548,7 @@ public class CharacterBattle : MonoBehaviour {
         waitPosition(() => {
             invulnerable = true;
             Hide = true;
-            LM.SetColor(new Color(1f, 1f, 1f, 0.3f));
+            //LM.SetColor(new Color(1f, 1f, 1f, 0.3f));
             onAttackComplete();
             BuffTurns = 5;
             state = State.Idle;

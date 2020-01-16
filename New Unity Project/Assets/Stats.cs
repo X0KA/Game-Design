@@ -65,9 +65,10 @@ public class Stats : MonoBehaviour
         Level = lvl;
     }
 
-    public void AdmonSetStatsbyLevel(int Level)
+    public void AdmonSetStatsbyLevel(int lvl)
     {
-        switch (Level)
+        Level = lvl;
+        switch (lvl)
         {
             case 1:
                 Health = 2;
@@ -117,9 +118,10 @@ public class Stats : MonoBehaviour
 
     }
 
-    public void FlorenceSetStatsbyLevel(int Level)
+    public void FlorenceSetStatsbyLevel(int lvl)
     {
-        switch (Level)
+        Level = lvl;
+        switch (lvl)
         {
             case 1:
                 Health = 3;
@@ -166,9 +168,10 @@ public class Stats : MonoBehaviour
         }
     }
 
-    public void ClaudioSetStatsbyLevel(int Level)
+    public void ClaudioSetStatsbyLevel(int lvl)
     {
-        switch (Level)
+        Level = lvl;
+        switch (lvl)
         {
             case 1:
                 Health = 3;

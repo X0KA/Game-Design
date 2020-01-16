@@ -17,6 +17,14 @@ using UnityEngine.EventSystems;
 
 public class BattleHandler : MonoBehaviour {
 
+    public enum SceneStatus
+    {
+         MainMenu,
+         Options,
+         Battle
+    }
+
+
     private static BattleHandler instance;
 
     public static BattleHandler GetInstance() {
@@ -34,6 +42,7 @@ public class BattleHandler : MonoBehaviour {
     public GameObject monkSkillsMenu;
     public GameObject priestSkillsMenu;
     public GameObject warriorSkillsMenu;
+    public SceneStatus currentScene = SceneStatus.MainMenu;
 
     public CharacterBattle currentTarget;
 
@@ -45,10 +54,14 @@ public class BattleHandler : MonoBehaviour {
     private CharacterBattle activeCharacterBattle;
     private List<CharacterBattle> QueueOfCharacterBattles = new List<CharacterBattle>();
     private State state;
-
+    public GameObject UIinBattle;
+    public GameObject UI_Menu;
     //Used to click on characters
     private Ray ray;
     public Camera camera;
+    public bool playerVsBoot;
+    public bool Battlefinished;
+    private LoadingInfo info;
 
     private enum State {
         WaitingForPlayer,
@@ -59,9 +72,13 @@ public class BattleHandler : MonoBehaviour {
         instance = this;
     }
 
-    private void Start() {
 
-        for(int i = 0; i < 3; i++)
+    public void StartScene()
+    {
+        playerVsBoot = info.PlayerVsBot;
+        currentScene = SceneStatus.Battle;
+
+        for (int i = 0; i < 3; i++)
         {
             playerCharacterBattle.Add(SpawnCharacter(true, Player[IndexCreatorPlayers]));
             enemyCharacterBattle.Add(SpawnCharacter(false, Enemy[IndexCreatorEnemys]));
@@ -69,11 +86,13 @@ public class BattleHandler : MonoBehaviour {
             QueueOfCharacterBattles.Add(enemyCharacterBattle[i]);
         }
 
-        QueueOfCharacterBattles.Sort(SortBySpeed);
+        //QueueOfCharacterBattles.Sort(SortBySpeed);
         //playerCharacterBattle = SpawnCharacter(true, Player);
         //enemyCharacterBattle = SpawnCharacter(false,Enemy);
 
         SetActiveCharacterBattle(QueueOfCharacterBattles[0]);
+        currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
+        currentTarget.EnableCursor();
 
         if (activeCharacterBattle.isPlayerTeam)
         {
@@ -81,41 +100,54 @@ public class BattleHandler : MonoBehaviour {
         }
         else
             state = State.Busy;
+        UI_Menu.SetActive(false);
+        UIinBattle.SetActive(true);
+
+    }
+    public void CleanUp()
+    {
+        playerCharacterBattle.Clear();
+        enemyCharacterBattle.Clear();
+
+        foreach (var npc in QueueOfCharacterBattles)
+        {
+            QueueOfCharacterBattles.Remove(npc);
+            Destroy(npc);
+        }
+    }
+
+    private void Start() {
+
+        info = GameObject.Find("GameManager").GetComponent<LoadingInfo>();
     }
 
     private void Update() {
+
         if (TestBattleOver())
         {
             return;
         }
-
-        ClickOnObjective();
-
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (currentScene == SceneStatus.Battle)
         {
-            state = State.Busy;
-            SetActiveCharacterBattle(playerCharacterBattle[1]);
-            //activeCharacterBattle.SheerWill(() => {
-            //    ChooseNextActiveCharacter();
-            //});
-            activeCharacterBattle.Camouflage(() =>
+            if (playerVsBoot)
             {
-                ChooseNextActiveCharacter();
-            });
-        }
+                ClickOnObjective();
 
+                if (state == State.WaitingForPlayer)
+                {
 
-        if (state == State.WaitingForPlayer) {
+                    if (Input.GetKeyDown(KeyCode.G))
+                    {
+                        currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
+                        state = State.Busy;
+                        ToAttack(activeCharacterBattle.charclass, currentTarget);
+                    }
 
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                state = State.Busy;
-                activeCharacterBattle.BlindingDart(enemyCharacterBattle[1], () => {
-                    ChooseNextActiveCharacter();
-                });
+                }
             }
-            else if (Input.GetKeyDown(KeyCode.G))
+            else
             {
-            currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
+                currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
                 state = State.Busy;
                 ToAttack(activeCharacterBattle.charclass, currentTarget);
             }
@@ -198,22 +230,31 @@ public class BattleHandler : MonoBehaviour {
         //TODO CHECK FOR ALL CHARACTERS
 
         //if()
+        if (currentScene == SceneStatus.Battle)
+        {
+            if (playerCharacterBattle.Count == 0)
+            {
 
-        if (playerCharacterBattle.Count==0) {
+                BattleOverWindow.Show_Static("Enemy Wins!");
 
-            BattleOverWindow.Show_Static("Enemy Wins!");
-            return true;
+                return true;
+            }
+            if (enemyCharacterBattle.Count == 0)
+            {
+
+                BattleOverWindow.Show_Static("Player Wins!");
+                return true;
+
+            }
         }
-        if (enemyCharacterBattle.Count==0) {
-
-            BattleOverWindow.Show_Static("Player Wins!");
-            return true;
-            
-        }
-        
         return false;
     }
 
+    public void Return()
+    {
+        CleanUp();
+        currentScene = SceneStatus.MainMenu;
+    }
     static int SortBySpeed(CharacterBattle p1, CharacterBattle p2)
     {
         return p2.Speed.CompareTo(p1.Speed);
@@ -374,14 +415,22 @@ public class BattleHandler : MonoBehaviour {
         switch (skill)
         {
             case 0:
-                activeCharacterBattle.Attack(target, () => {
+                activeCharacterBattle.Attack(currentTarget, () => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 1:
                 activeCharacterBattle.Camouflage(() => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
+                break;
+            case 2:
+                activeCharacterBattle.Slice(currentTarget, () => {
+                    ChooseNextActiveCharacter();
+                });
+                state = State.Busy;
                 break;
             default:
                 break;
@@ -502,6 +551,7 @@ public class BattleHandler : MonoBehaviour {
                 activeCharacterBattle.Camouflage(() => {
                     ChooseNextActiveCharacter();
                 });
+                state = State.Busy;
                 break;
             case 2:
                 activeCharacterBattle.Slice(currentTarget, () => {
@@ -547,8 +597,10 @@ public class BattleHandler : MonoBehaviour {
             RaycastHit hit_;
             if (Physics.Raycast(ray, out hit_, 200.0f))
             {
+                currentTarget.DisableCursor();
                 Debug.DrawRay(ray.GetPoint(0.0f), ray.direction * 70.0f, Color.blue);
                 currentTarget = hit_.collider.gameObject.GetComponent<Stats>().parent.GetComponent<CharacterBattle>();
+                currentTarget.EnableCursor();
             }
             else if (!EventSystem.current.IsPointerOverGameObject())
             {
