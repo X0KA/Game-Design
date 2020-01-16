@@ -21,7 +21,6 @@ public class Stats : MonoBehaviour
     public int Damage = 0;
     public int Level = 1;
     public int Speed = 0;
-    public int MaxHealth = 0;
     public int HealingPoints = 0;
     public bool Blinded = false;
     public int BlindDuration = 0;
@@ -57,8 +56,167 @@ public class Stats : MonoBehaviour
         return ret;
     }
 
+    public int GetLevel()
+    {
+        return Level;
+    }
+    public void SetLevel( int lvl)
+    {
+        Level = lvl;
+    }
 
-    
+    public void AdmonSetStatsbyLevel(int Level)
+    {
+        switch (Level)
+        {
+            case 1:
+                Health = 2;
+                Damage = 1;
+                break;
+            case 2:
+                Health = 6;
+                Damage = 2;
+                break;
+            case 3:
+                Health = 7;
+                Damage = 3;
+                break;
+            case 4:
+                Health = 8;
+                Damage = 3;
+                break;
+            case 5:
+                Health = 10;
+                Damage = 4;
+                break;
+            case 6:
+                Health = 12;
+                Damage = 4;
+                break;
+            case 7:
+                Health = 14;
+                Damage = 5;
+                break;
+            case 8:
+                Health = 16;
+                Damage = 5;
+                break;
+            case 9:
+                Health = 20;
+                Damage = 5;
+                break;
+            case 10:
+                Health = 25;
+                Damage = 6;
+                break;
+
+            default:
+                break;
+        }
+
+
+    }
+
+    public void FlorenceSetStatsbyLevel(int Level)
+    {
+        switch (Level)
+        {
+            case 1:
+                Health = 3;
+                Damage = 1;
+                break;
+            case 2:
+                Health = 3;
+                Damage = 2;
+                break;
+            case 3:
+                Health = 4;
+                Damage = 2;
+                break;
+            case 4:
+                Health = 4;
+                Damage = 3;
+                break;
+            case 5:
+                Health = 5;
+                Damage = 3;
+                break;
+            case 6:
+                Health = 5;
+                Damage = 3;
+                break;
+            case 7:
+                Health = 7;
+                Damage = 4;
+                break;
+            case 8:
+                Health = 8;
+                Damage = 4;
+                break;
+            case 9:
+                Health = 10;
+                Damage = 5;
+                break;
+            case 10:
+                Health = 13;
+                Damage = 5;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void ClaudioSetStatsbyLevel(int Level)
+    {
+        switch (Level)
+        {
+            case 1:
+                Health = 3;
+                Damage = 1;
+                break;
+            case 2:
+                Health = 3;
+                Damage = 2;
+                break;
+            case 3:
+                Health = 4;
+                Damage = 3;
+                break;
+            case 4:
+                Health = 6;
+                Damage = 3;
+                break;
+            case 5:
+                Health = 6;
+                Damage = 4;
+                break;
+            case 6:
+                Health = 9;
+                Damage = 5;
+                break;
+            case 7:
+                Health = 12;
+                Damage = 5;
+                break;
+            case 8:
+                Health = 14;
+                Damage = 6;
+                break;
+            case 9:
+                Health = 16;
+                Damage = 8;
+                break;
+            case 10:
+                Health = 20;
+                Damage = 10;
+                break;
+
+            default:
+                break;
+        }
+
+
+    }
 
     // Start is called before the first frame update
     void Start()

@@ -15,6 +15,7 @@ namespace Assets.HeroEditor.Common.CharacterScripts
         /// </summary>
         public List<SpriteRenderer> Sprites;
 
+        public List<Color> DefaultColors;
 		/// <summary>
 		/// SortingGroup can be used when you have multiple characters on scene.
 		/// </summary>
@@ -34,7 +35,20 @@ namespace Assets.HeroEditor.Common.CharacterScripts
         /// Step between two sprites (layers).
         /// </summary>
         public float ZStep = 0.00001f;
-
+        public void Start()
+        {
+            
+            for (var i = 0; i < Sprites.Count; i++)
+            {
+                if (Sprites[i] != null)
+                    DefaultColors.Add(Sprites[i].color);
+                else
+                {
+                    Sprites[i] = new SpriteRenderer();
+                    DefaultColors.Add(new Color(1f,1f,1f,1f));
+                }
+            }
+        }
         /// <summary>
         /// Set layers order by Sorting Order.
         /// </summary>
@@ -43,10 +57,25 @@ namespace Assets.HeroEditor.Common.CharacterScripts
             for (var i = 0; i < Sprites.Count; i++)
             {
                 Sprites[i].sortingOrder = SortingOrderStep * i + SortingOrderOffset;
+                DefaultColors[i] = Sprites[i].color;
                 SetLocalZ(Sprites[i], 0);
             }
         }
+        public void SetColor(Color color)
+        {
+            for (var i = 0; i < Sprites.Count; i++)
+            {
+                    Sprites[i].color = color;
+            }
+        }
+        public void RestartDefaultColors()
+        {
+            for (var i = 0; i < Sprites.Count; i++)
+            {
+                    Sprites[i].color = DefaultColors[i];
 
+            }
+        }
         /// <summary>
         /// Set layers order by Z coortidate.
         /// </summary>

@@ -94,11 +94,11 @@ public class BattleHandler : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Q))
         {
             state = State.Busy;
-            SetActiveCharacterBattle(playerCharacterBattle[2]);
+            SetActiveCharacterBattle(playerCharacterBattle[1]);
             //activeCharacterBattle.SheerWill(() => {
             //    ChooseNextActiveCharacter();
             //});
-            activeCharacterBattle.Smoke(enemyCharacterBattle, () =>
+            activeCharacterBattle.Camouflage(() =>
             {
                 ChooseNextActiveCharacter();
             });
@@ -106,9 +106,6 @@ public class BattleHandler : MonoBehaviour {
 
 
         if (state == State.WaitingForPlayer) {
-
-            
-
 
             if (Input.GetKeyDown(KeyCode.Space)) {
                 state = State.Busy;
@@ -382,7 +379,7 @@ public class BattleHandler : MonoBehaviour {
                 });
                 break;
             case 1:
-                activeCharacterBattle.Attack(target, () => {
+                activeCharacterBattle.Camouflage(() => {
                     ChooseNextActiveCharacter();
                 });
                 break;
@@ -477,7 +474,12 @@ public class BattleHandler : MonoBehaviour {
                 });
                 break;
             case 1:
-                activeCharacterBattle.Attack(currentTarget, () => {
+                activeCharacterBattle.Camouflage(() => {
+                    ChooseNextActiveCharacter();
+                });
+                break;
+            case 2:
+                activeCharacterBattle.Slice(currentTarget, () => {
                     ChooseNextActiveCharacter();
                 });
                 break;

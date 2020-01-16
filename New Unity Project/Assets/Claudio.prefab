@@ -5569,6 +5569,7 @@ MonoBehaviour:
   - {fileID: 212168918037731208}
   - {fileID: 212610341130831568}
   - {fileID: 212892741932753196}
+  DefaultColors: []
   SortingGroup: {fileID: 210551131624867136}
   SortingOrderOffset: 0
   SortingOrderStep: 5
@@ -5587,6 +5588,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particles:
   - {fileID: 1797936735143735809, guid: 75daf50a9ea72d14fa755963643ccfcc, type: 3}
+  - {fileID: 5303685483916873933, guid: 53b4d0a0944f20048bb171dec5aedbc6, type: 3}
   name: Claudio
   charclass: 1
   Health: 12
@@ -5597,6 +5599,7 @@ MonoBehaviour:
   HealingPoints: 0
   Blinded: 0
   BlindDuration: 0
+  parent: {fileID: 0}
 --- !u!65 &6001916767427036987
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -26906,16 +26909,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4305107873441922}
     m_Modifications:
-    - target: {fileID: 1248016225065632749, guid: 47547f97b7fae4e47805b38f53059784,
-        type: 3}
-      propertyPath: m_Name
-      value: SheerWillShield
-      objectReference: {fileID: 0}
-    - target: {fileID: 1248016225065632749, guid: 47547f97b7fae4e47805b38f53059784,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 592207863641307256, guid: 47547f97b7fae4e47805b38f53059784,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -26969,6 +26962,16 @@ PrefabInstance:
     - target: {fileID: 592207863641307256, guid: 47547f97b7fae4e47805b38f53059784,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1248016225065632749, guid: 47547f97b7fae4e47805b38f53059784,
+        type: 3}
+      propertyPath: m_Name
+      value: SheerWillShield
+      objectReference: {fileID: 0}
+    - target: {fileID: 1248016225065632749, guid: 47547f97b7fae4e47805b38f53059784,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

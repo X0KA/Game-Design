@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey.Utils;
+using Assets.HeroEditor.Common.CharacterScripts;
 
 public class CharacterBattle : MonoBehaviour {
 
@@ -54,8 +55,12 @@ public class CharacterBattle : MonoBehaviour {
     private int counter;
     public GameObject toDestroy;
     public GameObject deBuffToDestroy;
+    public LayerManager LM;
 
     private bool invulnerable;
+    private bool Hide;
+    private bool bleed;
+    private int bleedcounter;
 
     private enum State {
         Idle,
@@ -84,6 +89,7 @@ public class CharacterBattle : MonoBehaviour {
         Speed = CharStats.Speed;
         charclass = CharStats.charclass;
         particles = CharStats.particles;
+        LM = m_GameObject.GetComponent<LayerManager>();
 
         CharStats.parent = this.gameObject;
 
@@ -119,6 +125,7 @@ public class CharacterBattle : MonoBehaviour {
 
         TextScript.Create(namePos, CharStats.name, 35, false, gameObject);
 
+
         //PlayAnimIdle();
     }
 
@@ -139,6 +146,11 @@ public class CharacterBattle : MonoBehaviour {
         if (DeactiveBuff)
         {
             invulnerable = false;
+            if (Hide == true)
+            {
+                LM.RestartDefaultColors();
+                Hide = false;
+            }
             InShield.SetActive(false);
             DeactiveBuff = false;
         }
@@ -147,6 +159,15 @@ public class CharacterBattle : MonoBehaviour {
             blinded = false;
             DeactiveDeBuff = false;
             Destroy(deBuffToDestroy); 
+        }
+        if (bleed)
+        {
+            healthSystem.Damage(2);
+            bleedcounter--;
+            if (bleedcounter <= 0)
+            {
+                bleed = false;
+            }
         }
 
         if (toDestroy != null)
@@ -402,6 +423,55 @@ public class CharacterBattle : MonoBehaviour {
         });
     }
 
+    public void Slice(CharacterBattle targetCharacterBattle, Action onAttackComplete)
+    {
+
+        Vector3 slideTargetPosition = targetCharacterBattle.GetPosition() + (GetPosition() - targetCharacterBattle.GetPosition()).normalized * 10f;
+        Vector3 startingPosition = GetPosition();
+
+        // Slide to Target
+        going = true;
+        timeToAttack = true;
+        SlideToPosition(slideTargetPosition, () => {
+            // Arrived at Target, attack him
+            counter = 0;
+            state = State.Busy;
+            targetCharacterBattle.bleed = true;
+            targetCharacterBattle.bleedcounter = 3;
+
+            foreach (ParticleSystem ps in particles)
+            {
+                if (ps.name == "Slice")
+                {
+                    toDestroy = Instantiate(ps).gameObject;
+                }
+            }
+
+            waitPosition(() => {
+
+                int damageAmount = CharStats.Damage;
+                if (!blinded)
+                    if (targetCharacterBattle.invulnerable == false)
+                        targetCharacterBattle.Damage(this, damageAmount*2);
+
+                    else
+                    {
+                        if (--CharStats.BlindDuration < 1)
+                            CharStats.Blinded = false;
+                    }
+
+                SlideToPosition(startingPosition, () =>
+                {
+                    // Slide back completed, back to idle
+                    state = State.Idle;
+                    onAttackComplete();
+
+                });
+            });
+
+        });
+    }
+
     public void LethalThreat(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
         Vector3 slideTargetPosition = (targetCharacterBattle.GetPosition() + (GetPosition() - targetCharacterBattle.GetPosition()).normalized * 10f)+new Vector3(30,0);
@@ -452,9 +522,26 @@ public class CharacterBattle : MonoBehaviour {
         });
     }
 
+    public void Camouflage(Action onAttackComplete)
+    {
+        animator.Play("Victory");
+
+        string LoginScreen = CharStats.name + " uses Camouflage to hide himself";
+
+        TextScript.Create(new Vector3(-50, -40), LoginScreen, 45, true);
+
+        waitPosition(() => {
+            invulnerable = true;
+            Hide = true;
+            LM.SetColor(new Color(1f, 1f, 1f, 0.3f));
+            onAttackComplete();
+            BuffTurns = 5;
+            state = State.Idle;
+        });
+    }
+
     public void Smoke(List<CharacterBattle> targets,Action onAttackComplete)
     {
-
         animator.Play("Victory");
         GameObject BindParticle = null;
         state = State.Busy;
