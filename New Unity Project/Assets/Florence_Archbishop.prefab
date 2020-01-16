@@ -5594,9 +5594,9 @@ MonoBehaviour:
   - {fileID: 1797936735143735809, guid: 75daf50a9ea72d14fa755963643ccfcc, type: 3}
   name: Florence
   charclass: 3
-  Health: 7
-  Damage: 4
-  Level: 7
+  Health: 3
+  Damage: 1
+  Level: 1
   Speed: 0
   HealingPoints: 1
   Blinded: 0

@@ -5592,8 +5592,8 @@ MonoBehaviour:
   - {fileID: 5303685483916873933, guid: 53b4d0a0944f20048bb171dec5aedbc6, type: 3}
   name: Claudio
   charclass: 1
-  Health: 12
-  Damage: 5
+  Health: 3
+  Damage: 1
   Level: 1
   Speed: 0
   HealingPoints: 0
