@@ -81,7 +81,7 @@ public class BattleHandler : MonoBehaviour {
         for (int i = 0; i < 3; i++)
         {
             playerCharacterBattle.Add(SpawnCharacter(true, Player[IndexCreatorPlayers]));
-            enemyCharacterBattle.Add(SpawnCharacter(false, Enemy[IndexCreatorEnemys]));
+            enemyCharacterBattle.Add(SpawnCharacter(false, Enemy[(int)info.EnemyList[i]]));
             QueueOfCharacterBattles.Add(playerCharacterBattle[i]);
             QueueOfCharacterBattles.Add(enemyCharacterBattle[i]);
         }

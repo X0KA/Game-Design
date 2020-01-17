@@ -19,7 +19,7 @@ public class ButtonAvailable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (identifier <= charStats.AbleToSkill())
+        if (identifier < charStats.AbleToSkill())
         {
             button.interactable = true;
         }

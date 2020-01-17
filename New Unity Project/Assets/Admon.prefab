@@ -5593,9 +5593,9 @@ MonoBehaviour:
   - {fileID: 1797936735143735809, guid: 75daf50a9ea72d14fa755963643ccfcc, type: 3}
   name: Admon
   charclass: 0
-  Health: 14
-  Damage: 5
-  Level: 7
+  Health: 5
+  Damage: 1
+  Level: 1
   Speed: 0
   HealingPoints: 0
   Blinded: 0
