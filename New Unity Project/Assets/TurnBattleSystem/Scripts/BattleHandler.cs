@@ -109,12 +109,14 @@ public class BattleHandler : MonoBehaviour {
         playerCharacterBattle.Clear();
         enemyCharacterBattle.Clear();
 
-        foreach (CharacterBattle npc in QueueOfCharacterBattles)
+        for (int i =0;i< QueueOfCharacterBattles.Count;++i)
         {
-            PopCharacterFromList(npc,0.0f);
-            int i = 0;
+            Destroy(QueueOfCharacterBattles[i].gameObject);
         }
-        //QueueOfCharacterBattles.Clear();
+        QueueOfCharacterBattles.Clear();
+
+        IndexCreatorPlayers = 0;
+        IndexCreatorEnemys = 0;
     }
 
     private void Start() {
