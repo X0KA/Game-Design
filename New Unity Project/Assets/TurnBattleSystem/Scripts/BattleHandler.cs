@@ -109,11 +109,12 @@ public class BattleHandler : MonoBehaviour {
         playerCharacterBattle.Clear();
         enemyCharacterBattle.Clear();
 
-        foreach (var npc in QueueOfCharacterBattles)
+        foreach (CharacterBattle npc in QueueOfCharacterBattles)
         {
-            QueueOfCharacterBattles.Remove(npc);
-            Destroy(npc);
+            PopCharacterFromList(npc,0.0f);
+            int i = 0;
         }
+        //QueueOfCharacterBattles.Clear();
     }
 
     private void Start() {
@@ -147,9 +148,12 @@ public class BattleHandler : MonoBehaviour {
             }
             else
             {
-                currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
-                state = State.Busy;
-                ToAttack(activeCharacterBattle.charclass, currentTarget);
+                if (state == State.WaitingForPlayer)
+                {
+                    currentTarget = enemyCharacterBattle[Random.Range(0, enemyCharacterBattle.Count)];
+                    state = State.Busy;
+                    ToAttack(activeCharacterBattle.charclass, currentTarget);
+                }
             }
         }
     }
